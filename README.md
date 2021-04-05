@@ -1,39 +1,28 @@
-# Large Scale Data Processing: Project 2
-## Getting started
-Head to [Project 1](https://github.com/CSCI3390/project_1) if you're looking for information on Git, template repositories, or setting up your local/remote environments.
+Nick Bearup
+Project 2 Submission:
 
-## Resilient distributed datasets in Spark
-This project will familiarize you with RDD manipulations by implementing some of the sketching algorithms the course has covered thus far.  
+1) When I ran the exact_F2 function locally on my computer, I got the following output:
 
-You have been provided with the program's skeleton, which consists of 5 functions for computing either F0 or F2: the BJKST, tidemark, tug-of-war, exact F0, and exact F2 algorithms. The tidemark and exact F0 functions are given for your reference.
+21/04/04 20:35:14 INFO DAGScheduler: Job 1 finished: reduce at main.scala:131, took 114.330169 s
+==================================
+Exact F2. Time elapsed:114s. Estimate: 21968462
+==================================
 
-## Relevant data
+When I ran the program in the GCP, this is the error message that I kept getting:
 
-You can find the TAR file containing `2014to2017.csv` [here](https://drive.google.com/file/d/1MtCimcVKN6JrK2sLy4GbjeS7E2a-UMA0/view?usp=sharing). Download and expand the TAR file for local processing. For processing in the cloud, refer to the steps for creating a storage bucket in [Project 1](https://github.com/CSCI3390/project_1) and upload `2014to2017.csv`.
+21/04/05 21:28:07 INFO org.sparkproject.jetty.util.log: Logging initialized @3631ms to org.sparkproject.jetty.util.log.Slf4jLog
+21/04/05 21:28:07 INFO org.sparkproject.jetty.server.Server: jetty-9.4.36.v20210114; built: 2021-01-14T16:44:28.689Z; git: 238ec6997c7806b055319a6d11f8ae7564adc0de; jvm 1.8.0_282-b08
+21/04/05 21:28:07 INFO org.sparkproject.jetty.server.Server: Started @3809ms
+21/04/05 21:28:07 INFO org.sparkproject.jetty.server.AbstractConnector: Started ServerConnector@1d207fad{HTTP/1.1, (http/1.1)}{0.0.0.0:39743}
+21/04/05 21:28:08 INFO org.apache.hadoop.yarn.client.RMProxy: Connecting to ResourceManager at bearupn-csci3390-cluster-m/10.128.0.12:8032
+21/04/05 21:28:08 INFO org.apache.hadoop.yarn.client.AHSProxy: Connecting to Application History server at bearupn-csci3390-cluster-m/10.128.0.12:10200
+21/04/05 21:28:09 INFO org.apache.hadoop.conf.Configuration: resource-types.xml not found
+21/04/05 21:28:09 INFO org.apache.hadoop.yarn.util.resource.ResourceUtils: Unable to find 'resource-types.xml'.
+21/04/05 21:28:11 INFO org.apache.hadoop.yarn.client.api.impl.YarnClientImpl: Submitted application application_1617657916224_0001
+21/04/05 21:28:12 INFO org.apache.hadoop.yarn.client.RMProxy: Connecting to ResourceManager at bearupn-csci3390-cluster-m/10.128.0.12:8030
+Usage: project_2 input_path option = {BJKST, tidemark, ToW, exactF2, exactF0} 
+21/04/05 21:28:14 INFO org.sparkproject.jetty.server.AbstractConnector: Stopped Spark@1d207fad{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
 
-`2014to2017.csv` contains the records of parking tickets issued in New York City from 2014 to 2017. You'll see that the data has been cleaned so that only the license plate information remains. Keep in mind that a single car can receive multiple tickets within that period and therefore appear in multiple records.  
+I was in contact with Professor Su extensively, and couldn't seem to figure out what the issue was.
 
-**Hint**: while implementing the functions, it may be helpful to copy 100 records or so to a new file and use that file for faster testing.  
-
-## Calculating and reporting your findings
-You'll be submitting a report along with your code that provides commentary on the tasks below.  
-
-1. **(3 points)** Implement the `exact_F2` function. The function accepts an RDD of strings as an input. The output should be exactly `F2 = sum(Fs^2)`, where `Fs` is the number of occurrences of plate `s` and the sum is taken over all plates. This can be achieved in one line using the `map` and `reduceByKey` methods of the RDD class. Run `exact_F2` locally **and** on GCP with 1 driver and 4 machines having 2 x N1 cores. Copy the results to your report. Terminate the program if it runs for longer than 30 minutes.
-2. **(3 points)** Implement the `Tug_of_War` function. The function accepts an RDD of strings, a parameter `width`, and a parameter `depth` as inputs. It should run `width * depth` Tug-of-War sketches, group the outcomes into groups of size `width`, compute the means of each group, and then return the median of the `depth` means in approximating F2. A 4-universal hash function class `four_universal_Radamacher_hash_function`, which generates a hash function from a 4-universal family, has been provided for you. The generated function `hash(s: String)` will hash a string to 1 or -1, each with a probability of 50%. Once you've implemented the function, set `width` to 10 and `depth` to 3. Run `Tug_of_War` locally **and** on GCP with 1 driver and 4 machines having 2 x N1 cores. Copy the results to your report. Terminate the program if it runs for longer than 30 minutes. **Please note** that the algorithm won't be significantly faster than `exact_F2` since the number of different cars is not large enough for the memory to become a bottleneck. Additionally, computing `width * depth` hash values of the license plate strings requires considerable overhead. That being said, executing with `width = 1` and `depth = 1` should generally still be faster.
-3. **(3 points)** Implement the `BJKST` function. The function accepts an RDD of strings, a parameter `width`, and a parameter `trials` as inputs. `width` denotes the maximum bucket size of each sketch. The function should run `trials` sketches and return the median of the estimates of the sketches. A template of the `BJKSTSketch` class is also included in the sample code. You are welcome to finish its methods and apply that class or write your own class from scratch. A 2-universal hash function class `hash_function(numBuckets_in: Long)` has also been provided and will hash a string to an integer in the range `[0, numBuckets_in - 1]`. Once you've implemented the function, determine the smallest `width` required in order to achieve an error of +/- 20% on your estimate. Keeping `width` at that value, set `depth` to 5. Run `BJKST` locally **and** on GCP with 1 driver and 4 machines having 2 x N1 cores. Copy the results to your report. Terminate the program if it runs for longer than 30 minutes.
-4. **(1 point)** Compare the BJKST algorithm to the exact F0 algorithm and the tug-of-war algorithm to the exact F2 algorithm. Summarize your findings.
-
-## Submission via GitHub
-Delete your project's current **README.md** file (the one you're reading right now) and include your report as a new **README.md** file in the project root directory. Have no fear—the README with the project description is always available for reading in the template repository you created your repository from. For more information on READMEs, feel free to visit [this page](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-readmes) in the GitHub Docs. You'll be writing in [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown). Be sure that your repository is up to date and you have pushed all changes you've made to the project's code. When you're ready to submit, simply provide the link to your repository in the Canvas assignment's submission.
-
-## You must do the following to receive full credit:
-1. Create your report in the ``README.md`` and push it to your repo.
-2. In the report, you must include your (and your partner's) full name in addition to any collaborators.
-3. Submit a link to your repo in the Canvas assignment.
-
-## Late submission penalties
-Beginning with the minute after the deadline, your submission will be docked a full letter grade (10%) for every 
-day that it is late. For example, if the assignment is due at 11:59 PM EST on Friday and you submit at 3:00 AM EST on Sunday,
-then you will be docked 20% and the maximum grade you could receive on that assignment is an 80%. 
-Late penalties are calculated from the last commit in the Git log.
-**If you make a commit more than 48 hours after the deadline, you will receive a 0.**
+I clearly had some trouble with this project. I also have some code in the main file that may be able to get a point or two, but nothing substantial.
