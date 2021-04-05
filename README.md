@@ -25,4 +25,4 @@ Usage: project_2 input_path option = {BJKST, tidemark, ToW, exactF2, exactF0}
 
 I was in contact with Professor Su extensively, and couldn't seem to figure out what the issue was.
 
-I clearly had some trouble with this project. I also have some code in the main file that may be able to get a point or two, but nothing substantial.
+I clearly had some trouble with this project.
