@@ -76,13 +76,13 @@ object main{
       this(Set((s, z_of_s )) , z_of_s, bucket_size_in)
     }
 
-    def +(that: BJKSTSketch): BJKSTSketch = {    /* Merging two sketches */
+  /*  def +(that: BJKSTSketch): BJKSTSketch = {    /* Merging two sketches */
 
-    }
+    } */
 
-    def add_string(s: String, z_of_s: Int): BJKSTSketch = {   /* add a string to the sketch */
+  /*  def add_string(s: String, z_of_s: Int): BJKSTSketch = {   /* add a string to the sketch */
 
-    }
+    } */
   }
 
 
@@ -99,15 +99,15 @@ object main{
   }
 
 
-  def BJKST(x: RDD[String], width: Int, trials: Int) : Double = {
+/*  def BJKST(x: RDD[String], width: Int, trials: Int) : Double = {
+        
+  }
+*/
+
+/*  def Tug_of_War(x: RDD[String], width: Int, depth:Int) : Long = {
 
   }
-
-
-  def Tug_of_War(x: RDD[String], width: Int, depth:Int) : Long = {
-
-  }
-
+*/
 
   def exact_F0(x: RDD[String]) : Long = {
     val ans = x.distinct.count
@@ -116,8 +116,9 @@ object main{
 
 
   def exact_F2(x: RDD[String]) : Long = {
-
-  }
+       val ans = x.map(z => (z, 1)).reduceByKey(_ + _).map(z => z._2*z._2).reduce(_ + _);
+       return ans
+    }
 
 
 
@@ -141,13 +142,13 @@ object main{
         println("Usage: project_2 input_path BJKST #buckets trials")
         sys.exit(1)
       }
-      val ans = BJKST(dfrdd, args(2).toInt, args(3).toInt)
+  /*    val ans = BJKST(dfrdd, args(2).toInt, args(3).toInt) */
 
       val endTimeMillis = System.currentTimeMillis()
       val durationSeconds = (endTimeMillis - startTimeMillis) / 1000
 
       println("==================================")
-      println("BJKST Algorithm. Bucket Size:"+ args(2) + ". Trials:" + args(3) +". Time elapsed:" + durationSeconds + "s. Estimate: "+ans)
+  /*    println("BJKST Algorithm. Bucket Size:"+ args(2) + ". Trials:" + args(3) +". Time elapsed:" + durationSeconds + "s. Estimate: "+ans)  */
       println("==================================")
     }
     else if(args(1)=="tidemark") {
@@ -169,11 +170,11 @@ object main{
          println("Usage: project_2 input_path ToW width depth")
          sys.exit(1)
       }
-      val ans = Tug_of_War(dfrdd, args(2).toInt, args(3).toInt)
+  /*    val ans = Tug_of_War(dfrdd, args(2).toInt, args(3).toInt)  */
       val endTimeMillis = System.currentTimeMillis()
       val durationSeconds = (endTimeMillis - startTimeMillis) / 1000
       println("==================================")
-      println("Tug-of-War F2 Approximation. Width :" +  args(2) + ". Depth: "+ args(3) + ". Time elapsed:" + durationSeconds + "s. Estimate: "+ans)
+  /*    println("Tug-of-War F2 Approximation. Width :" +  args(2) + ". Depth: "+ args(3) + ". Time elapsed:" + durationSeconds + "s. Estimate: "+ans)  */
       println("==================================")
     }
     else if(args(1)=="exactF2") {
@@ -209,4 +210,3 @@ object main{
 
   }
 }
-
